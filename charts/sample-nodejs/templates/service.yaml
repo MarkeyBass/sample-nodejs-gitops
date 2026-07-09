@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    {{- include "sample-nodejs.labels" . | nindent 4 }}
+  annotations:
+    # Lets a Prometheus installation discover and scrape /metrics
+    prometheus.io/scrape: "true"
+    prometheus.io/path: "/metrics"
+    prometheus.io/port: {{ .Values.config.port | quote }}
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    {{- include "sample-nodejs.selectorLabels" . | nindent 4 }}
+  ports:
+    - name: http
+      port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP

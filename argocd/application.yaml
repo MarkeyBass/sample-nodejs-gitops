@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sample-nodejs
+  namespace: argocd
+  # Ensures app resources are deleted if the Application itself is deleted
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/MarkeyBass/sample-nodejs-gitops.git
+    targetRevision: main
+    path: charts/sample-nodejs
+    helm:
+      valueFiles:
+        - values.yaml
+  destination:
+    server: https://kubernetes.default.svc # the cluster Argo CD runs in
+    namespace: sample-app
+  syncPolicy:
+    automated:
+      prune: true    # delete cluster resources that were removed from git
+      selfHeal: true # revert manual drift (kubectl edit) back to git state
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 10s
+        factor: 2

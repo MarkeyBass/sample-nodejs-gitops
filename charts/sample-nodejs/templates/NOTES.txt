@@ -1,0 +1,11 @@
+{{ .Chart.Name }} {{ .Values.image.tag }} deployed as release "{{ .Release.Name }}".
+
+{{- if .Values.ingress.enabled }}
+Reach it through the Ingress:
+  http://{{ .Values.ingress.host }}{{ .Values.ingress.path }}my-app
+(ensure {{ .Values.ingress.host }} resolves to your ingress controller IP,
+e.g. via /etc/hosts when running on minikube)
+{{- else }}
+Ingress is disabled; port-forward instead:
+  kubectl port-forward svc/{{ .Release.Name }} 8080:{{ .Values.service.port }}
+{{- end }}

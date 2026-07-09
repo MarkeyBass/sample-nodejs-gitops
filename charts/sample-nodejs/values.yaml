@@ -1,0 +1,62 @@
+# Default values for sample-nodejs.
+# CI updates image.tag on every release; everything else is human-managed.
+
+replicaCount: 2
+
+image:
+  repository: markeybass/sample-nodejs # Docker Hub private repo
+  tag: "1.0.0"
+  pullPolicy: IfNotPresent
+
+# Secret of type kubernetes.io/dockerconfigjson that lets the cluster
+# pull from the private Docker Hub repo (created out-of-band, not stored in git)
+imagePullSecrets:
+  - name: dockerhub-creds
+
+# App configuration delivered via ConfigMap
+config:
+  port: 8080
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: nginx
+  host: sample-nodejs.local
+  path: /
+  pathType: Prefix
+  annotations: {}
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 250m
+    memory: 128Mi
+
+probes:
+  readiness:
+    path: /ready
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  liveness:
+    path: /live
+    initialDelaySeconds: 10
+    periodSeconds: 15
+
+# Pod-level hardening
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+  seccompProfile:
+    type: RuntimeDefault
+
+containerSecurityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop: ["ALL"]

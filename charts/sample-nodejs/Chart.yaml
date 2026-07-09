@@ -1,0 +1,11 @@
+apiVersion: v2
+name: sample-nodejs
+description: Express sample app with Prometheus metrics, packaged for GitOps deployment via Argo CD
+type: application
+# Chart version — bumped when the chart templates/structure change
+version: 0.1.0
+# App version — the default image tag; bumped by CI on each release
+appVersion: "1.0.0"
+maintainers:
+  - name: Mark Kirzhner
+    url: https://github.com/MarkeyBass
