@@ -24,7 +24,10 @@ service:
 ingress:
   enabled: true
   className: nginx
-  host: sample-nodejs.local
+  # nip.io wildcard DNS: resolves to 127.0.0.1, so the app is reachable in a
+  # browser via `kubectl port-forward` on the ingress controller — no /etc/hosts
+  # edits or sudo `minikube tunnel` needed
+  host: sample-nodejs.127.0.0.1.nip.io
   path: /
   pathType: Prefix
   annotations: {}
